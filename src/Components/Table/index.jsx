@@ -1,7 +1,15 @@
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import React from 'react';
+import GlobalContext from '../../Context/GlobalContext';
+import regexFilter from '../../helpers/regexFilter';
 
 export default function Table({ data, headerLine }) {
+  const { filter: { filters } } = useContext(GlobalContext);
+  const handleFilterByName = () => {
+    const { filterByName: { name } } = filters;
+    return regexFilter(data, 'name', name);
+  };
+
   return (
     <table>
       <thead>
@@ -10,7 +18,7 @@ export default function Table({ data, headerLine }) {
         </tr>
       </thead>
       <tbody>
-        { data.map((planet, index) => {
+        { handleFilterByName().map((planet, index) => {
           const keys = Object.keys(planet);
           return (
             <tr
