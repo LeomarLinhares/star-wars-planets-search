@@ -14,7 +14,7 @@ export default function Header() {
   const numberPropertiesSeparator = () => {
     const entries = Object.entries(data[0]);
     const onlyNumbers = entries.reduce((acc, curr) => {
-      if (typeof filterNumber(curr[1]) === 'number') {
+      if (!Number.isNaN(filterNumber(curr[1]))) {
         return [...acc, curr[0]];
       }
       return acc;
