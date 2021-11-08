@@ -5,9 +5,27 @@ import regexFilter from '../../helpers/regexFilter';
 
 export default function Table({ data, headerLine }) {
   const { filter: { filters } } = useContext(GlobalContext);
+
   const handleFilterByName = () => {
-    const { filterByName: { name } } = filters;
-    return regexFilter(data, 'name', name);
+    const { filterByName: { name }, filterByNumericValues } = filters;
+    const filteredOnlyByName = regexFilter(data, 'name', name);
+    return filterByNumericValues.reduce((acc, curr) => (
+      acc.filter((object) => {
+        switch (curr.comparison) {
+        case 'bigger-than':
+          return object[curr.column] > curr.value;
+
+        case 'less-than':
+          return object[curr.column] < curr.value;
+
+        case 'equal':
+          return object[curr.column] === curr.value;
+
+        default:
+          return false;
+        }
+      })
+    ), filteredOnlyByName);
   };
 
   return (
