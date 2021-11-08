@@ -1,12 +1,15 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import GlobalContext from '../../Context/GlobalContext';
 import filterNumber from '../../helpers/filterNumber';
-import { toUpperCaseAndUnderlineRemover } from '../../helpers/stringTreatment';
 
 export default function Header() {
+  const [columnValue, setColumnValue] = useState('rotation_period');
+  const [comparisonValue, setComparisonValue] = useState('bigger-than');
+  const [numericValue, setNumericValue] = useState(0);
   const { filter, setFilter, data, loading } = useContext(GlobalContext);
   const { filters: { filterByName: { name } } } = filter;
-  const handleFilter = ({ target: { value } }) => {
+
+  const handleNameFilter = ({ target: { value } }) => {
     const { filters } = filter;
     setFilter({ filters: { ...filters, filterByName: { name: value } } });
   };
@@ -22,6 +25,20 @@ export default function Header() {
     return onlyNumbers;
   };
 
+  const setNumberFilter = () => {
+    const { filters } = filter;
+    setFilter({ filters: {
+      ...filters,
+      filterByNumericValues: [
+        ...filters.filterByNumericValues,
+        {
+          column: columnValue,
+          comparison: comparisonValue,
+          value: numericValue,
+        },
+      ] } });
+  };
+
   if (loading) return '';
   return (
     <aside>
@@ -30,16 +47,22 @@ export default function Header() {
           type="text"
           data-testid="name-filter"
           value={ name }
-          onChange={ handleFilter }
+          onChange={ handleNameFilter }
         />
       </div>
       <div>
-        <select name="column-filter" id="column-filter" data-testid="column-filter">
+        <select
+          name="column-filter"
+          id="column-filter"
+          data-testid="column-filter"
+          onChange={ ({ target: { value } }) => setColumnValue(value) }
+          value={ columnValue }
+        >
           {
             numberPropertiesSeparator()
               .map((property, index) => (
-                <option key={ index }>
-                  { toUpperCaseAndUnderlineRemover(property) }
+                <option key={ index } value={ property }>
+                  { property }
                 </option>))
           }
         </select>
@@ -47,11 +70,28 @@ export default function Header() {
           name="comparison-filter"
           id="comparison-filter"
           data-testid="comparison-filter"
+          onChange={ ({ target: { value } }) => setComparisonValue(value) }
+          value={ comparisonValue }
         >
           <option value="bigger-than">maior que</option>
+          <option value="equal">igual a</option>
           <option value="less-than">menor que</option>
-          <option value="equal">igual</option>
         </select>
+        <input
+          type="number"
+          name="value-filter"
+          id="value-filter"
+          data-testid="value-filter"
+          onChange={ ({ target: { value } }) => setNumericValue(value) }
+          value={ numericValue }
+        />
+        <button
+          type="button"
+          data-testid="button-filter"
+          onClick={ setNumberFilter }
+        >
+          Filter
+        </button>
       </div>
     </aside>
   );
