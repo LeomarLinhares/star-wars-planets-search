@@ -12,6 +12,7 @@ function Provider({ children }) {
         filterByName: {
           name: '',
         },
+        filterByNumericValues: [],
       },
     },
   );
