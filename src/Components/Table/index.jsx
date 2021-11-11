@@ -1,24 +1,26 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import GlobalContext from '../../Context/GlobalContext';
 import regexFilter from '../../helpers/regexFilter';
 
 export default function Table({ data, headerLine }) {
-  const { filter: { filters } } = useContext(GlobalContext);
+  const { filter } = useContext(GlobalContext);
+  const { filters } = filter;
+  const [filteredData, setFilteredData] = useState([]);
 
-  const handleFilterByName = () => {
+  const setFilterByName = () => {
     const { filterByName: { name }, filterByNumericValues } = filters;
     const filteredOnlyByName = regexFilter(data, 'name', name);
     return filterByNumericValues.reduce((acc, curr) => (
       acc.filter((object) => {
         switch (curr.comparison) {
-        case 'bigger-than':
+        case 'maior que':
           return Number(object[curr.column]) > Number(curr.value);
 
-        case 'less-than':
+        case 'menor que':
           return Number(object[curr.column]) < Number(curr.value);
 
-        case 'equal':
+        case 'igual a':
           return Number(object[curr.column]) === Number(curr.value);
 
         default:
@@ -28,6 +30,10 @@ export default function Table({ data, headerLine }) {
     ), filteredOnlyByName);
   };
 
+  useEffect(() => {
+    setFilteredData(setFilterByName());
+  }, [filters]);
+
   return (
     <table>
       <thead>
@@ -36,7 +42,7 @@ export default function Table({ data, headerLine }) {
         </tr>
       </thead>
       <tbody>
-        { handleFilterByName().map((planet, index) => {
+        { filteredData.map((planet, index) => {
           const keys = Object.keys(planet);
           return (
             <tr
