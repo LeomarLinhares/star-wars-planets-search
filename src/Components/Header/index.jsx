@@ -1,8 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import GlobalContext from '../../Context/GlobalContext';
 import filterNumber from '../../helpers/filterNumber';
 
 export default function Header() {
+  const [columnFilters, setColumnFilters] = useState([]);
   const [columnValue, setColumnValue] = useState('rotation_period');
   const [comparisonValue, setComparisonValue] = useState('bigger-than');
   const [numericValue, setNumericValue] = useState(0);
@@ -22,7 +23,7 @@ export default function Header() {
       }
       return acc;
     }, []);
-    return onlyNumbers;
+    setColumnFilters(onlyNumbers);
   };
 
   const setNumberFilter = () => {
@@ -37,7 +38,13 @@ export default function Header() {
           value: numericValue,
         },
       ] } });
+    const newColumnFilters = columnFilters.filter((element) => element !== columnValue);
+    setColumnFilters(newColumnFilters);
   };
+
+  useEffect(() => {
+    if (!loading) numberPropertiesSeparator();
+  }, [loading]);
 
   if (loading) return '';
   return (
@@ -59,7 +66,7 @@ export default function Header() {
           value={ columnValue }
         >
           {
-            numberPropertiesSeparator()
+            columnFilters
               .map((property, index) => (
                 <option key={ index } value={ property }>
                   { property }
