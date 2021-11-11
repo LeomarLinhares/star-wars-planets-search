@@ -13,13 +13,13 @@ export default function Table({ data, headerLine }) {
       acc.filter((object) => {
         switch (curr.comparison) {
         case 'bigger-than':
-          return object[curr.column] > curr.value;
+          return Number(object[curr.column]) > Number(curr.value);
 
         case 'less-than':
-          return object[curr.column] < curr.value;
+          return Number(object[curr.column]) < Number(curr.value);
 
         case 'equal':
-          return object[curr.column] === curr.value;
+          return Number(object[curr.column]) === Number(curr.value);
 
         default:
           return false;
